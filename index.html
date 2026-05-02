@@ -1,0 +1,585 @@
+Вы правы, проблема была в отсутствии подключения шрифта. Вот полностью исправленный код — сохраните в файл `.html` и откройте в браузере:
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FACEIT CLICKER | CS2 STYLE CLICKER GAME</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #0a0f1a 0%, #05080f 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Poppins', 'Montserrat', system-ui, -apple-system, 'Impact', sans-serif;
+            padding: 16px;
+        }
+
+        /* ГЛАВНЫЙ КОНТЕЙНЕР — стилизация под FACEIT/CS2 */
+        .game-container {
+            max-width: 560px;
+            width: 100%;
+            background: rgba(8, 14, 22, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 56px;
+            border: 1px solid rgba(245, 166, 35, 0.5);
+            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 215, 120, 0.2);
+            padding: 22px 20px 35px;
+            transition: all 0.2s;
+        }
+
+        /* ШАПКА С РАНГОМ / LVL */
+        .rank-header {
+            background: #0b111c;
+            border-radius: 100px;
+            padding: 10px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 3px solid #f5a623;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+
+        .lvl-box {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            background: #00000055;
+            padding: 4px 20px;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+        }
+
+        .lvl-label {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #cbd5e6;
+            text-transform: uppercase;
+        }
+
+        .lvl-number {
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd966, #f5a623);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 8px rgba(245,166,35,0.4);
+            line-height: 1;
+        }
+
+        .next-rank {
+            background: #1a2533;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #9aabbf;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .next-rank span {
+            color: #ffc857;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0 2px;
+        }
+
+        /* СЧЕТЧИК НАЖАТИЙ (очки эло) */
+        .click-counter {
+            background: #03070fe0;
+            margin: 15px 8px;
+            border-radius: 48px;
+            padding: 14px 12px;
+            text-align: center;
+            border: 1px solid #3e4c5a;
+            box-shadow: inset 0 0 8px #00000030, 0 4px 12px black;
+        }
+
+        .counter-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #a5b7cc;
+            font-weight: 500;
+        }
+
+        .clicks-value {
+            font-size: 4.5rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            color: #fff3e0;
+            text-shadow: 0 0 12px #ffae34;
+            line-height: 1;
+            margin: 5px 0;
+        }
+
+        /* ПРОГРЕСС-БАР ДО СЛЕДУЮЩЕГО LVL */
+        .progress-section {
+            margin: 20px 12px 25px;
+        }
+        .progress-track {
+            background: #151f2a;
+            border-radius: 30px;
+            height: 18px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 6px #00000077;
+        }
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #f5a623, #ffdd88, #ffcf4a);
+            border-radius: 30px;
+            transition: width 0.12s cubic-bezier(0.2, 0.95, 0.4, 1.1);
+            box-shadow: 0 0 8px #ffb347;
+        }
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #98aec9;
+            text-transform: uppercase;
+        }
+
+        /* ГЛАВНАЯ КНОПКА КЛИКА (стиль FACEIT) */
+        .click-btn {
+            background: radial-gradient(circle at 30% 25%, #3b4e3c, #19261f);
+            width: 88%;
+            margin: 10px auto 20px;
+            display: block;
+            border: none;
+            border-radius: 80px;
+            padding: 28px 15px;
+            font-size: 2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            color: #fae67a;
+            text-shadow: 0 2px 0 #5a3e1a;
+            cursor: pointer;
+            transition: all 0.05s linear;
+            box-shadow: 0 12px 0 #0b100d, 0 6px 22px rgba(0,0,0,0.5);
+            font-family: inherit;
+            border-bottom: 1px solid #ffcf4a60;
+        }
+
+        .click-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 5px 0 #0b100d;
+        }
+
+        /* Эффект вспышки при клике */
+        .flash {
+            animation: clickFlash 0.09s ease-out;
+        }
+
+        @keyframes clickFlash {
+            0% { background: radial-gradient(circle at 30% 25%, #8bb56a, #3b5e3c); color: #ffffcc; text-shadow: 0 0 8px gold; transform: scale(0.99);}
+            100% { background: radial-gradient(circle at 30% 25%, #3b4e3c, #19261f); }
+        }
+
+        /* СТАТИСТИКА И ДОСТИЖЕНИЯ */
+        .stats-panel {
+            display: flex;
+            justify-content: space-between;
+            background: #060c14b3;
+            border-radius: 40px;
+            padding: 12px 20px;
+            margin-top: 20px;
+            backdrop-filter: blur(4px);
+            font-weight: 600;
+            gap: 12px;
+        }
+        .stat {
+            text-align: center;
+            flex: 1;
+        }
+        .stat-label {
+            font-size: 0.65rem;
+            color: #b7c7dd;
+            letter-spacing: 1px;
+        }
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #ffdd99;
+            line-height: 1.2;
+        }
+
+        .lvl-ups-log {
+            background: #03070cd9;
+            margin-top: 18px;
+            border-radius: 28px;
+            padding: 12px 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #e0edff;
+            text-align: center;
+            font-family: monospace;
+            border-left: 5px solid #f5a623;
+            transition: 0.1s;
+        }
+
+        /* анимация для повышения ранга */
+        .rank-up-effect {
+            animation: rankGlow 0.4s ease-out;
+        }
+        
+        @keyframes rankGlow {
+            0% { border-color: #ffd966; box-shadow: 0 0 0 0 rgba(245,166,35,0.7); }
+            50% { border-color: #ffb347; box-shadow: 0 0 20px 5px rgba(245,166,35,0.8); }
+            100% { border-color: rgba(245, 166, 35, 0.5); box-shadow: 0 0 0 0 rgba(245,166,35,0); }
+        }
+        
+        button {
+            background: none;
+            border: none;
+        }
+
+        @media (max-width: 520px) {
+            .game-container {
+                padding: 16px;
+            }
+            .clicks-value {
+                font-size: 3rem;
+            }
+            .lvl-number {
+                font-size: 2.2rem;
+            }
+            .click-btn {
+                font-size: 1.5rem;
+                padding: 20px 12px;
+                letter-spacing: 3px;
+            }
+            .stat-value {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameContainer">
+    <!-- РАНГОВАЯ ЗОНА (FACEIT CT) -->
+    <div class="rank-header" id="rankHeader">
+        <div class="lvl-box">
+            <div class="lvl-label">FACEIT LVL</div>
+            <div class="lvl-number" id="levelDisplay">1</div>
+        </div>
+        <div class="next-rank" id="nextRankHint">
+            ⚡ до LVL <span id="nextLevelNum">2</span>
+        </div>
+    </div>
+
+    <!-- СЧЕТЧИК НАЖАТИЙ (ЭЛО-ПОИНТЫ) -->
+    <div class="click-counter">
+        <div class="counter-title">🎯 XP / ELO POINTS 🎯</div>
+        <div class="clicks-value" id="clickCountDisplay">0</div>
+    </div>
+
+    <!-- ПРОГРЕСС ДО СЛЕДУЮЩЕГО РАНГА -->
+    <div class="progress-section">
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-labels">
+            <span>◄ CURRENT LVL</span>
+            <span>NEXT RANK ►</span>
+        </div>
+    </div>
+
+    <!-- ГЛАВНАЯ КНОПКА (КЛИКЕР) -->
+    <button class="click-btn" id="clickerButton">🔥 TAP TO PLAY 🔥</button>
+
+    <!-- СТАТИСТИКА -->
+    <div class="stats-panel">
+        <div class="stat">
+            <div class="stat-label">TOTAL CLICKS</div>
+            <div class="stat-value" id="totalClicksStat">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">CURRENT LVL</div>
+            <div class="stat-value" id="lvlStat">1</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">NEED FOR NEXT</div>
+            <div class="stat-value" id="clicksToNextStat">100</div>
+        </div>
+    </div>
+
+    <!-- ЛОГ ПОВЫШЕНИЙ / СОБЫТИЙ -->
+    <div class="lvl-ups-log" id="logMessage">
+        💥 FACEIT READY! Каждые 100 нажатий = новый LVL (Макс. 10) 💥
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ------------------- ИГРОВЫЕ НАСТРОЙКИ -------------------
+        const MAX_LEVEL = 10;
+        const CLICKS_PER_LVL = 100;   // 100 кликов на уровень
+        
+        // Игровое состояние
+        let totalClicks = 0;      // общее количество нажатий (влияет на уровень)
+        let currentLevel = 1;      // стартовый уровень 1
+        
+        // DOM элементы
+        const levelDisplay = document.getElementById('levelDisplay');
+        const clickCountDisplay = document.getElementById('clickCountDisplay');
+        const progressFill = document.getElementById('progressFill');
+        const nextLevelNumSpan = document.getElementById('nextLevelNum');
+        const totalClicksStat = document.getElementById('totalClicksStat');
+        const lvlStat = document.getElementById('lvlStat');
+        const clicksToNextStat = document.getElementById('clicksToNextStat');
+        const logMessageDiv = document.getElementById('logMessage');
+        const clickerButton = document.getElementById('clickerButton');
+        const rankHeaderDiv = document.getElementById('rankHeader');
+        const gameContainer = document.getElementById('gameContainer');
+        
+        // Вспомогательная функция: сколько кликов сделано в рамках текущего уровня (0..99)
+        function getProgressClicks() {
+            if (currentLevel >= MAX_LEVEL) return CLICKS_PER_LVL;
+            return totalClicks % CLICKS_PER_LVL;
+        }
+        
+        // Нужно ли повысить уровень (проверка условия)
+        function shouldLevelUp() {
+            if (currentLevel >= MAX_LEVEL) return false;
+            // Для повышения с lvl N до N+1 нужно totalClicks >= N * 100
+            // Например lvl 1 -> 2 нужно 100 кликов
+            return totalClicks >= currentLevel * CLICKS_PER_LVL;
+        }
+        
+        // Обновить весь интерфейс (цифры, прогресс, подсказки)
+        function refreshUI() {
+            // Отображаем текущий уровень
+            levelDisplay.innerText = currentLevel;
+            lvlStat.innerText = currentLevel;
+            
+            // Счетчик кликов
+            clickCountDisplay.innerText = totalClicks;
+            totalClicksStat.innerText = totalClicks;
+            
+            if (currentLevel < MAX_LEVEL) {
+                const progressInside = totalClicks % CLICKS_PER_LVL;
+                const percent = (progressInside / CLICKS_PER_LVL) * 100;
+                progressFill.style.width = `${percent}%`;
+                const neededNext = CLICKS_PER_LVL - progressInside;
+                clicksToNextStat.innerText = neededNext;
+                nextLevelNumSpan.innerText = currentLevel + 1;
+                document.getElementById('nextRankHint').innerHTML = `⚡ до LVL <span>${currentLevel + 1}</span>`;
+            } else {
+                // MAX LEVEL - полный прогресс
+                progressFill.style.width = `100%`;
+                clicksToNextStat.innerText = 0;
+                nextLevelNumSpan.innerText = 'MAX';
+                document.getElementById('nextRankHint').innerHTML = `🏆 MAXIMUM RANK 10 🏆`;
+                progressFill.style.background = "linear-gradient(90deg, #f5cb5c, #ffea9e, #f5a623)";
+            }
+            
+            // небольшой визуальный твик для максимального уровня
+            if (currentLevel === MAX_LEVEL) {
+                progressFill.style.background = "linear-gradient(90deg, #ffd966, #ffe6b3, #ffbc5e)";
+            } else {
+                progressFill.style.background = "linear-gradient(90deg, #f5a623, #ffdd88)";
+            }
+        }
+        
+        // Отображение сообщения в логе с эффектом
+        let logTimeout = null;
+        function setLogMessage(msg, isImportant = true) {
+            if (logTimeout) clearTimeout(logTimeout);
+            logMessageDiv.style.opacity = '0.9';
+            logMessageDiv.innerHTML = msg;
+            setTimeout(() => {
+                if (logMessageDiv) logMessageDiv.style.opacity = '1';
+            }, 30);
+            // Через 3.5 сек вернуть подсказку, если не важно или если не максимальный уровень
+            logTimeout = setTimeout(() => {
+                if (currentLevel >= MAX_LEVEL) {
+                    logMessageDiv.innerHTML = "✨ ТЫ ДОСТИГ ВЕРШИНЫ! FACEIT GOD ✨";
+                } else {
+                    logMessageDiv.innerHTML = "💢 ПРОДОЛЖАЙ КЛИКАТЬ! 100 XP = НОВЫЙ РАНГ 💢";
+                }
+            }, 3500);
+        }
+        
+        // Анимация повышения ранга + эффект на контейнере
+        function animateRankUp() {
+            if (rankHeaderDiv) {
+                rankHeaderDiv.classList.add('rank-up-effect');
+                setTimeout(() => {
+                    rankHeaderDiv.classList.remove('rank-up-effect');
+                }, 450);
+            }
+            // тряска прогресс-бара
+            const track = document.querySelector('.progress-track');
+            if (track) {
+                track.style.transform = 'scaleX(1.02)';
+                setTimeout(() => { if(track) track.style.transform = ''; }, 150);
+            }
+        }
+        
+        // Основная функция повышения уровня (циклическая, на случай перескока)
+        // Возвращает true если произошло хотя бы одно повышение
+        function processLevelUps() {
+            let levelUpped = false;
+            let maxReachedFlag = false;
+            // Пока можно повышать и не достигнут предел
+            while (currentLevel < MAX_LEVEL && totalClicks >= currentLevel * CLICKS_PER_LVL) {
+                currentLevel++;
+                levelUpped = true;
+                if (currentLevel === MAX_LEVEL) maxReachedFlag = true;
+                // сообщение о новом уровне
+                if (currentLevel === MAX_LEVEL) {
+                    setLogMessage(`🔥🔥🔥 РАНГ ПОВЫШЕН! МАКСИМАЛЬНЫЙ FACEIT LVL ${currentLevel} 🔥🔥🔥`, true);
+                } else {
+                    setLogMessage(`⭐️ РАНГ ПОВЫШЕН! ТЕПЕРЬ ТЫ FACEIT LVL ${currentLevel} ⭐️`, true);
+                }
+                animateRankUp();
+                refreshUI();
+            }
+            if (levelUpped && maxReachedFlag) {
+                // дополнительный эпик эффект
+                if(gameContainer) {
+                    gameContainer.style.borderColor = "#ffcc66";
+                    setTimeout(() => { if(gameContainer) gameContainer.style.borderColor = "rgba(245, 166, 35, 0.5)"; }, 500);
+                }
+            }
+            if (levelUpped) refreshUI();
+            return levelUpped;
+        }
+        
+        // Эффект клика (анимация кнопки, микровибрация)
+        function applyClickFeedback() {
+            // Вспышка кнопки
+            clickerButton.classList.add('flash');
+            setTimeout(() => {
+                clickerButton.classList.remove('flash');
+            }, 90);
+            
+            // Лёгкая вибрация для мобильных (если поддерживается)
+            if (navigator.vibrate) {
+                navigator.vibrate(15);
+            }
+            
+            // Анимация счетчика кликов
+            const counterSpan = document.getElementById('clickCountDisplay');
+            if (counterSpan) {
+                counterSpan.style.transform = 'scale(1.1)';
+                setTimeout(() => { if(counterSpan) counterSpan.style.transform = ''; }, 70);
+            }
+        }
+        
+        // Обработчик нажатия на кнопку
+        function handleClick() {
+            // Добавляем 1 клик в общее количество
+            totalClicks++;
+            
+            // Визуальный фидбек
+            applyClickFeedback();
+            
+            // ОБНОВЛЯЕМ UI перед проверкой повышения (чтобы цифры сразу изменились)
+            refreshUI();
+            
+            // Проверка и выполнение повышений уровней (возможно несколько подряд)
+            const wasLevelUp = processLevelUps();
+            
+            // Если уровень не повысился, просто обновим статистику ещё раз (на всякий)
+            if (!wasLevelUp) {
+                refreshUI();
+                // Показываем легкое сообщение при клике без повышения, но не спамим
+                if (currentLevel < MAX_LEVEL) {
+                    const clicksDoneInLvl = totalClicks % CLICKS_PER_LVL;
+                    const leftForNext = CLICKS_PER_LVL - clicksDoneInLvl;
+                    if (leftForNext === 1) {
+                        setLogMessage("⚡ ЕЩЁ ОДИН КЛИК И НОВЫЙ LVL! ⚡", false);
+                    } else if (leftForNext <= 5 && leftForNext > 1) {
+                        setLogMessage(`🔻 ОСТАЛОСЬ ${leftForNext} КЛИКОВ ДО ПОВЫШЕНИЯ! 🔻`, false);
+                    }
+                } else {
+                    // Максимальный уровень, просто эпик сообщение изредка
+                    if (totalClicks % 25 === 0) {
+                        setLogMessage("💀 ТЫ АБСОЛЮТНАЯ ЛЕГЕНДА FACEIT! LVL 10 💀", false);
+                    }
+                }
+            } else {
+                // Если было повышение, процессLevelUps уже установил свой лог, повторно не спамим
+                // Но дополнительно освежим прогресс после всех изменений
+                refreshUI();
+            }
+            
+            // Гарантируем корректный прогресс-бар при максимальном уровне
+            if (currentLevel === MAX_LEVEL) {
+                progressFill.style.width = '100%';
+                clicksToNextStat.innerText = 0;
+            }
+        }
+        
+        // Сброс/инициализация игры (стартовые значения)
+        function initGame() {
+            totalClicks = 0;
+            currentLevel = 1;
+            refreshUI();
+            progressFill.style.width = '0%';
+            clicksToNextStat.innerText = CLICKS_PER_LVL;
+            setLogMessage("🔫 CS2 FACEIT режим активирован! Жми на кнопку, поднимай LVL! 🔫", false);
+            // Делаем кнопку доступной
+            clickerButton.disabled = false;
+            
+            // Дополнительный декор: подсказка в nextRankHint
+            document.getElementById('nextRankHint').innerHTML = `⚡ до LVL <span>2</span>`;
+            nextLevelNumSpan.innerText = '2';
+            // Убираем анимации если остались
+        }
+        
+        // Добавляем слушатель событий
+        clickerButton.addEventListener('click', handleClick);
+        
+        // Эффекты при наведении на кнопку (для ПК)
+        clickerButton.addEventListener('mouseenter', () => {
+            clickerButton.style.filter = 'brightness(1.08)';
+            clickerButton.style.transform = 'scale(1.01)';
+        });
+        clickerButton.addEventListener('mouseleave', () => {
+            clickerButton.style.filter = '';
+            clickerButton.style.transform = '';
+        });
+        
+        // Обработка touch для мобильных устройств (чтобы не было задержки)
+        clickerButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleClick();
+        });
+        
+        // Старт игры
+        initGame();
+        
+        // Для надежности, если что-то пошло не так, обновляем при загрузке
+        window.addEventListener('load', () => {
+            refreshUI();
+        });
+        
+        // Автосохранение в localStorage не требуется по заданию, но оставим чистоту
+        
+        console.log("FACEIT CLICKER CS2 STYLE - ИГРА ЗАПУЩЕНА!");
+    })();
+</script>
+</body>
+</html>
+```
